@@ -1,0 +1,24 @@
+/* Transition classes */
+.split-active-left {
+    transform: translateX(-100%) !important;
+}
+
+.split-active-right {
+    transform: translateX(100%) !important;
+}
+
+.slide-up {
+    transform: translateY(-100%) !important;
+}
+
+.slide-left {
+    transform: translateX(-100%) !important;
+}
+
+.slide-reset {
+    transform: translateY(0) !important;
+}
+
+.hidden {
+    display: none !important;
+}
