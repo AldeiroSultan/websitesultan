@@ -1,10 +1,11 @@
-// Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     // State Management
     let currentPage = 1;
     const totalPages = 5;
     let isAnimating = false;
     let lastScrollTime = 0;
+
+    // Timeline state
     let timelineScrollPosition = 0;
     let isTimelineComplete = false;
 
@@ -31,27 +32,29 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleTransition(direction) {
         if (direction === 'down') {
             switch(currentPage) {
-                case 1:
+                case 1: // First page split transition
                     if (pages.splitLeft && pages.splitRight) {
                         pages.splitLeft.style.transform = 'translateX(-100%)';
                         pages.splitRight.style.transform = 'translateX(100%)';
                         // Show content wrapper after split animation
                         setTimeout(() => {
-                            pages.contentWrapper.style.display = 'block';
+                            if (pages.contentWrapper) {
+                                pages.contentWrapper.style.display = 'block';
+                            }
                         }, 800);
                     }
                     break;
-                case 2:
+                case 2: // About page to Work Experience
                     if (pages.page2) {
                         pages.page2.style.transform = 'translateY(-100%)';
                     }
                     break;
-                case 3:
+                case 3: // Work Experience to Projects
                     if (pages.page3) {
                         pages.page3.style.transform = 'translateX(-100%)';
                     }
                     break;
-                case 4:
+                case 4: // Projects to Contact
                     if (pages.page5) {
                         pages.page5.style.transform = 'translateY(0)';
                         pages.page5.style.zIndex = '6';
@@ -60,26 +63,28 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             switch(currentPage) {
-                case 2:
+                case 2: // Back to first page
                     if (pages.splitLeft && pages.splitRight) {
                         pages.splitLeft.style.transform = 'translateX(0)';
                         pages.splitRight.style.transform = 'translateX(0)';
-                        setTimeout(() => {
-                            pages.contentWrapper.style.display = 'none';
-                        }, 800);
+                        if (pages.contentWrapper) {
+                            setTimeout(() => {
+                                pages.contentWrapper.style.display = 'none';
+                            }, 800);
+                        }
                     }
                     break;
-                case 3:
+                case 3: // Back to About page
                     if (pages.page2) {
                         pages.page2.style.transform = 'translateY(0)';
                     }
                     break;
-                case 4:
+                case 4: // Back to Work Experience
                     if (pages.page3) {
                         pages.page3.style.transform = 'translateX(0)';
                     }
                     break;
-                case 5:
+                case 5: // Back to Projects
                     if (pages.page5) {
                         pages.page5.style.transform = 'translateY(100%)';
                         setTimeout(() => {
@@ -91,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Timeline Scroll Handler
+    // Handle Timeline Scrolling
     function handleTimelineScroll(direction) {
         const timelineContent = document.querySelector('.timeline-content');
         const progress = document.querySelector('.timeline-progress');
@@ -121,38 +126,35 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Check if timeline is complete
         if (timelineScrollPosition >= 100) {
             isTimelineComplete = true;
         }
     }
 
-    // Scroll Handler
+    // Main Scroll Handler
     function handleScroll(event) {
         const now = Date.now();
-        if (now - lastScrollTime < 800) return; // Debounce scroll events
+        if (now - lastScrollTime < 800) return;
         lastScrollTime = now;
 
         if (isAnimating) return;
         
         const direction = event.deltaY > 0 ? 'down' : 'up';
         
-        // Handle timeline scrolling on page 3
+        // Handle timeline scrolling on work experience page
         if (currentPage === 3 && !isTimelineComplete) {
             handleTimelineScroll(direction);
             return;
         }
-        
+
         if (direction === 'down' && currentPage < totalPages) {
             isAnimating = true;
             handleTransition('down');
             currentPage++;
-            console.log('Moving to page:', currentPage);
         } else if (direction === 'up' && currentPage > 1) {
             isAnimating = true;
             handleTransition('up');
             currentPage--;
-            console.log('Moving to page:', currentPage);
         }
 
         setTimeout(() => {
@@ -176,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Handle resize events
+    // Handle resize for responsive behavior
     function handleResize() {
         const vh = window.innerHeight * 0.01;
         document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -206,17 +208,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set initial states
         handleResize();
         
-        // Event Listeners
+        // Add event listeners
         window.addEventListener('wheel', handleScroll, { passive: true });
         window.addEventListener('resize', handleResize);
         document.addEventListener('mousemove', handleParallax);
         document.addEventListener('touchstart', handleTouchStart, { passive: true });
         document.addEventListener('touchmove', handleTouchMove, { passive: true });
-        
-        // Remove transition stopper after load
-        setTimeout(() => {
-            document.body.classList.remove('resize-animation-stopper');
-        }, 100);
     }
 
     // Start the application
