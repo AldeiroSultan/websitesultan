@@ -35,75 +35,70 @@
     display: none !important;
 }
 
-/* Transition Timing */
+/* Timeline Animations */
+.timeline-card {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-card.active {
+    opacity: 1;
+    transform: translateY(0) !important;
+}
+
+.timeline-point {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.timeline-point.active::after {
+    transform: translate(-50%, -50%) scale(1) !important;
+}
+
+/* Project Grid Animations */
+.project-item {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-content {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Rolling Text Animation */
+@keyframes roll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Page Transitions */
 .page {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 800ms;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Page-specific transition delays */
-#page2 { transition-delay: 100ms; }
-#page3 { transition-delay: 50ms; }
-#page4 { transition-delay: 0ms; }
-#page5 { transition-delay: 0ms; }
-
-/* Animation Classes */
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
+/* Page-specific transitions */
+#page2 {
+    transition-delay: 50ms;
 }
 
-.fade-out {
-    animation: fadeOut 0.5s ease forwards;
+#page3 {
+    transition-delay: 100ms;
 }
 
-.scale-in {
-    animation: scaleIn 0.5s ease forwards;
+#page4 {
+    transition-delay: 150ms;
 }
 
-.scale-out {
-    animation: scaleOut 0.5s ease forwards;
+#page5 {
+    transition-delay: 200ms;
 }
 
-/* Page Enter/Exit States */
-.page-enter {
-    opacity: 0;
-    transform: scale(0.95);
-}
-
-.page-enter-active {
-    opacity: 1;
-    transform: scale(1);
-    transition: opacity 300ms, transform 300ms;
-}
-
-.page-exit {
-    opacity: 1;
-    transform: scale(1);
-}
-
-.page-exit-active {
-    opacity: 0;
-    transform: scale(0.95);
-    transition: opacity 300ms, transform 300ms;
-}
-
-/* Loading State */
+/* Loading States */
 .loading {
     opacity: 0.7;
     pointer-events: none;
-    transition: opacity 0.3s ease;
-}
-
-/* Utility Classes */
-.transition-all {
-    transition: all 0.3s ease;
-}
-
-.transition-transform {
-    transition: transform 0.3s ease;
-}
-
-.transition-opacity {
     transition: opacity 0.3s ease;
 }
 
@@ -114,44 +109,33 @@
     perspective: 1000px;
 }
 
-/* Keyframe Animations */
+/* Content Transitions */
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 @keyframes fadeOut {
-    from {
-        opacity: 1;
-    }
-    to {
-        opacity: 0;
-    }
+    from { opacity: 1; }
+    to { opacity: 0; }
 }
 
-@keyframes scaleIn {
-    from {
-        transform: scale(0.9);
-        opacity: 0;
+/* Mobile Touch Optimization */
+@media (hover: none) and (pointer: coarse) {
+    .page {
+        touch-action: none;
     }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
-}
-
-@keyframes scaleOut {
-    from {
-        transform: scale(1);
-        opacity: 1;
-    }
-    to {
-        transform: scale(0.9);
-        opacity: 0;
+    
+    * {
+        -webkit-tap-highlight-color: transparent;
     }
 }
 
@@ -160,27 +144,48 @@ html {
     scroll-behavior: smooth;
 }
 
-/* Mobile Touch Optimization */
-@media (hover: none) and (pointer: coarse) {
-    .page {
-        touch-action: none; /* Prevents default touch behaviors */
-    }
-    
-    * {
-        -webkit-tap-highlight-color: transparent;
-    }
+/* Timeline Scroll Animation */
+.timeline-content {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Transition Performance Optimization */
-.transform-gpu {
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    perspective: 1000px;
+.timeline-progress {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Projects Page Parallax */
+.project-item {
     transform-style: preserve-3d;
+    will-change: transform;
 }
 
-/* Prevent Animation During Window Resize */
+/* Hover Transitions */
+.project-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.social-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Performance Optimization */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Animation Reset During Resize */
 .resize-animation-stopper * {
     animation: none !important;
     transition: none !important;
+}
+
+/* Split Panels Transition */
+.panel-left, .panel-right {
+    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom Easing */
+.custom-ease {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
