@@ -4,139 +4,150 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPages = 5;
     let isAnimating = false;
     let lastScrollTime = 0;
-    let timelineScrollPosition = 0;
-    let isTimelineComplete = false;
+    let timelinePosition = 0;
+    let timelineComplete = false;
 
-    // Initialize elements
+    // Initialize Elements
     const pages = {
-        splitContainer: document.querySelector('.split-container'),
         splitLeft: document.querySelector('.panel-left'),
         splitRight: document.querySelector('.panel-right'),
         contentWrapper: document.querySelector('.content-wrapper'),
-        page2: document.getElementById('page2'),  // About
-        page3: document.getElementById('page3'),  // Work Experience
-        page4: document.getElementById('page4'),  // Projects
-        page5: document.getElementById('page5')   // Contact
+        page2: document.getElementById('page2'),
+        page3: document.getElementById('page3'),
+        page4: document.getElementById('page4'),
+        page5: document.getElementById('page5'),
+        timeline: {
+            content: document.querySelector('.timeline-content'),
+            progress: document.querySelector('.timeline-progress'),
+            cards: document.querySelectorAll('.timeline-card'),
+            points: document.querySelectorAll('.timeline-point'),
+            sections: document.querySelectorAll('.timeline-section')
+        }
     };
 
-    // Debug check
-    Object.entries(pages).forEach(([key, element]) => {
-        if (!element) console.warn(`Element ${key} not found`);
-    });
-
-    // Show content wrapper initially
-    if (pages.contentWrapper) {
-        pages.contentWrapper.style.display = 'block';
-    }
-
-    // Handle forward transitions
-    function transitionForward() {
-        switch(currentPage) {
-            case 1: // Split panels
-                if (pages.splitLeft && pages.splitRight) {
-                    pages.splitLeft.style.transform = 'translateX(-100%)';
-                    pages.splitRight.style.transform = 'translateX(100%)';
-                }
-                break;
-            case 2: // About to Work Experience
-                if (pages.page2) {
-                    pages.page2.style.transform = 'translateY(-100%)';
-                }
-                break;
-            case 3: // Work Experience to Projects
-                if (pages.page3) {
-                    pages.page3.style.transform = 'translateX(-100%)';
-                }
-                break;
-            case 4: // Projects to Contact
-                if (pages.page5) {
-                    pages.page5.style.transform = 'translateY(0)';
-                    pages.page5.style.zIndex = '6';
-                }
-                break;
+    // Initialize Timeline
+    function initTimeline() {
+        if (pages.timeline.sections) {
+            pages.timeline.sections.forEach((section, index) => {
+                section.style.transform = `translateX(${index * 100}%)`;
+            });
         }
     }
 
-    // Handle backward transitions
-    function transitionBackward() {
-        switch(currentPage) {
-            case 2: // Back to split panels
-                if (pages.splitLeft && pages.splitRight) {
-                    pages.splitLeft.style.transform = 'translateX(0)';
-                    pages.splitRight.style.transform = 'translateX(0)';
-                }
-                break;
-            case 3: // Back to About
-                if (pages.page2) {
-                    pages.page2.style.transform = 'translateY(0)';
-                }
-                break;
-            case 4: // Back to Work Experience
-                if (pages.page3) {
-                    pages.page3.style.transform = 'translateX(0)';
-                }
-                break;
-            case 5: // Back to Projects
-                if (pages.page5) {
-                    pages.page5.style.transform = 'translateY(100%)';
-                    setTimeout(() => {
-                        pages.page5.style.zIndex = '1';
-                    }, 800);
-                }
-                break;
-        }
-    }
-
-    // Handle Work Experience Timeline
+    // Handle Timeline Scrolling
     function handleTimeline(direction) {
-        const timelineContent = document.querySelector('.timeline-content');
-        const progress = document.querySelector('.timeline-progress');
-        const cards = document.querySelectorAll('.timeline-card');
-        const points = document.querySelectorAll('.timeline-point');
-        
-        if (direction === 'down') {
-            timelineScrollPosition = Math.min(100, timelineScrollPosition + 2);
-        } else {
-            timelineScrollPosition = Math.max(0, timelineScrollPosition - 2);
+        const step = 5; // Increased step size for faster scrolling
+        timelinePosition = direction === 'down' 
+            ? Math.min(100, timelinePosition + step)
+            : Math.max(0, timelinePosition - step);
+
+        // Update progress bar
+        if (pages.timeline.progress) {
+            pages.timeline.progress.style.width = `${timelinePosition}%`;
         }
 
-        if (timelineContent) {
-            timelineContent.style.transform = `translateX(-${timelineScrollPosition}%)`;
-        }
-        if (progress) {
-            progress.style.width = `${timelineScrollPosition}%`;
+        // Calculate which section should be visible
+        const sectionIndex = Math.floor(timelinePosition / 25);
+        const offset = -(sectionIndex * 100);
+
+        // Center the current section
+        if (pages.timeline.content) {
+            pages.timeline.content.style.transform = `translateX(${offset}%)`;
         }
 
-        // Activate cards and points
-        cards.forEach((card, index) => {
-            const threshold = (index + 1) * 25;
-            if (timelineScrollPosition >= threshold - 10) {
+        // Update cards and points
+        pages.timeline.cards.forEach((card, index) => {
+            if (index <= sectionIndex) {
                 card.classList.add('active');
-                points[index]?.classList.add('active');
+                pages.timeline.points[index]?.classList.add('active');
             } else {
                 card.classList.remove('active');
-                points[index]?.classList.remove('active');
+                pages.timeline.points[index]?.classList.remove('active');
             }
         });
 
-        if (timelineScrollPosition >= 100) {
-            isTimelineComplete = true;
+        // Check if timeline is complete
+        if (timelinePosition >= 100) {
+            timelineComplete = true;
         }
     }
 
-    // Projects Page Parallax
+    // Handle Page Transitions
+    function handleTransition(direction) {
+        if (direction === 'down') {
+            switch(currentPage) {
+                case 1: // Split panels
+                    if (pages.splitLeft && pages.splitRight) {
+                        pages.splitLeft.style.transform = 'translateX(-100%)';
+                        pages.splitRight.style.transform = 'translateX(100%)';
+                    }
+                    break;
+                case 2: // About to Work Experience
+                    if (pages.page2) {
+                        pages.page2.style.transform = 'translateY(-100%)';
+                        initTimeline(); // Initialize timeline when entering work experience page
+                    }
+                    break;
+                case 3: // Work Experience to Projects
+                    if (pages.page3) {
+                        pages.page3.style.transform = 'translateX(-100%)';
+                    }
+                    break;
+                case 4: // Projects to Contact
+                    if (pages.page5) {
+                        pages.page5.style.transform = 'translateY(0)';
+                        pages.page5.style.zIndex = '6';
+                    }
+                    break;
+            }
+        } else {
+            switch(currentPage) {
+                case 2: // Back to split panels
+                    if (pages.splitLeft && pages.splitRight) {
+                        pages.splitLeft.style.transform = 'translateX(0)';
+                        pages.splitRight.style.transform = 'translateX(0)';
+                    }
+                    break;
+                case 3: // Back to About
+                    if (pages.page2) {
+                        pages.page2.style.transform = 'translateY(0)';
+                    }
+                    break;
+                case 4: // Back to Work Experience
+                    if (pages.page3) {
+                        pages.page3.style.transform = 'translateX(0)';
+                        timelineComplete = false;
+                        timelinePosition = 0;
+                        handleTimeline('up');
+                    }
+                    break;
+                case 5: // Back to Projects
+                    if (pages.page5) {
+                        pages.page5.style.transform = 'translateY(100%)';
+                        setTimeout(() => {
+                            pages.page5.style.zIndex = '1';
+                        }, 800);
+                    }
+                    break;
+            }
+        }
+    }
+
+    // Projects Page Parallax Effect
     function handleParallax(e) {
         if (currentPage !== 4) return;
 
         const mouseX = e.clientX / window.innerWidth - 0.5;
         const mouseY = e.clientY / window.innerHeight - 0.5;
 
-        const items = document.querySelectorAll('.project-item');
-        items.forEach(item => {
-            const speed = parseFloat(item.getAttribute('data-speed'));
-            const x = mouseX * 30 * speed;
-            const y = mouseY * 30 * speed;
-            item.style.transform = `translate(${x}px, ${y}px)`;
+        requestAnimationFrame(() => {
+            const items = document.querySelectorAll('.project-item');
+            items.forEach(item => {
+                const speed = parseFloat(item.getAttribute('data-speed'));
+                const x = mouseX * 30 * speed;
+                const y = mouseY * 30 * speed;
+                item.style.transform = `translate(${x}px, ${y}px)`;
+            });
         });
     }
 
@@ -151,18 +162,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const direction = event.deltaY > 0 ? 'down' : 'up';
         
         // Handle Work Experience Timeline
-        if (currentPage === 3 && !isTimelineComplete) {
+        if (currentPage === 3 && !timelineComplete) {
             handleTimeline(direction);
             return;
         }
 
         if (direction === 'down' && currentPage < totalPages) {
             isAnimating = true;
-            transitionForward();
+            handleTransition('down');
             currentPage++;
         } else if (direction === 'up' && currentPage > 1) {
             isAnimating = true;
-            transitionBackward();
+            handleTransition('up');
             currentPage--;
         }
 
@@ -190,23 +201,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Initialize Rolling Text
+    function initRollingText() {
+        const container = document.querySelector('.rolling-text-content');
+        if (container) {
+            container.innerHTML = container.innerHTML + container.innerHTML;
+        }
+    }
+
     // Event Listeners
     window.addEventListener('wheel', handleScroll, { passive: true });
     document.addEventListener('mousemove', handleParallax);
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
     document.addEventListener('touchmove', handleTouchMove, { passive: true });
 
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        document.body.classList.add('resize-animation-stopper');
-        clearTimeout(window.resizeTimer);
-        window.resizeTimer = setTimeout(() => {
-            document.body.classList.remove('resize-animation-stopper');
-        }, 400);
-    });
-
-    // Initialize page states
-    if (pages.page5) {
-        pages.page5.style.transform = 'translateY(100%)';
+    // Initialize
+    initRollingText();
+    if (pages.contentWrapper) {
+        pages.contentWrapper.style.display = 'block';
     }
 });

@@ -6,7 +6,7 @@
     transform-style: preserve-3d;
 }
 
-/* Page Transition Classes */
+/* Split Panel Transitions */
 .split-active-left {
     transform: translateX(-100%) !important;
 }
@@ -15,6 +15,7 @@
     transform: translateX(100%) !important;
 }
 
+/* Page Transitions */
 .slide-up {
     transform: translateY(-100%) !important;
 }
@@ -31,18 +32,23 @@
     transform: translateY(0) !important;
 }
 
+/* Display States */
 .hidden {
     display: none !important;
 }
 
-/* Timeline Animations */
+/* Timeline Transitions */
+.timeline-section {
+    transition: transform 0.3s ease;
+}
+
 .timeline-card {
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .timeline-card.active {
     opacity: 1;
-    transform: translateY(0) !important;
+    transform: translateY(-50%) !important;
 }
 
 .timeline-point {
@@ -53,47 +59,35 @@
     transform: translate(-50%, -50%) scale(1) !important;
 }
 
-/* Project Grid Animations */
-.project-item {
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.project-content {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Rolling Text Animation */
 @keyframes roll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
-/* Page Transitions */
+/* Page Transition Timing */
 .page {
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Page-specific transitions */
-#page2 {
-    transition-delay: 50ms;
-}
-
-#page3 {
-    transition-delay: 100ms;
-}
-
-#page4 {
-    transition-delay: 150ms;
-}
-
-#page5 {
-    transition-delay: 200ms;
-}
+/* Page-specific Transition Delays */
+#page2 { transition-delay: 50ms; }
+#page3 { transition-delay: 100ms; }
+#page4 { transition-delay: 150ms; }
+#page5 { transition-delay: 200ms; }
 
 /* Loading States */
 .loading {
@@ -109,7 +103,7 @@
     perspective: 1000px;
 }
 
-/* Content Transitions */
+/* Fade Animations */
 .fade-in {
     animation: fadeIn 0.5s ease forwards;
 }
@@ -128,6 +122,29 @@
     to { opacity: 0; }
 }
 
+/* Timeline Progress Animation */
+.timeline-progress {
+    transition: width 0.3s ease;
+}
+
+/* Project Hover Animations */
+.project-content {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-title, .project-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Social Button Animations */
+.social-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.social-button svg {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Mobile Touch Optimization */
 @media (hover: none) and (pointer: coarse) {
     .page {
@@ -139,53 +156,24 @@
     }
 }
 
-/* Smooth Scrolling */
-html {
-    scroll-behavior: smooth;
-}
-
-/* Timeline Scroll Animation */
-.timeline-content {
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.timeline-progress {
-    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Projects Page Parallax */
-.project-item {
-    transform-style: preserve-3d;
-    will-change: transform;
-}
-
-/* Hover Transitions */
-.project-link {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.social-button {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Performance Optimization */
+/* Animation Performance */
 * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animation Reset During Resize */
+/* Animation Reset for Window Resize */
 .resize-animation-stopper * {
     animation: none !important;
     transition: none !important;
 }
 
-/* Split Panels Transition */
-.panel-left, .panel-right {
-    transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+/* Timeline Scroll Animation */
+.timeline-content {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Custom Easing */
+/* Custom Timing Function */
 .custom-ease {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
