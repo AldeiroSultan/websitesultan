@@ -4,8 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPages = 5;
     let isAnimating = false;
     let lastScrollTime = 0;
-    let timelinePosition = 0;
+
+    // Timeline State Management
+    let timelineProgress = 0;
     let timelineComplete = false;
+    let scrollCounter = 0;
+    const MARKS = [0, 33.33, 66.66, 100];
+    const SCROLL_STEP = 11.11; // 33.33% / 3 scrolls
 
     // Initialize Elements
     const pages = {
@@ -17,59 +22,61 @@ document.addEventListener('DOMContentLoaded', () => {
         page4: document.getElementById('page4'),
         page5: document.getElementById('page5'),
         timeline: {
-            content: document.querySelector('.timeline-content'),
             progress: document.querySelector('.timeline-progress'),
-            cards: document.querySelectorAll('.timeline-card'),
             points: document.querySelectorAll('.timeline-point'),
-            sections: document.querySelectorAll('.timeline-section')
+            cards: document.querySelectorAll('.timeline-card')
         }
     };
 
-    // Initialize Timeline
-    function initTimeline() {
-        if (pages.timeline.sections) {
-            pages.timeline.sections.forEach((section, index) => {
-                section.style.transform = `translateX(${index * 100}%)`;
-            });
+    // Handle Timeline Progress
+    function updateTimeline(direction) {
+        if (direction === 'down') {
+            timelineProgress = Math.min(100, timelineProgress + SCROLL_STEP);
+        } else if (direction === 'up') {
+            timelineProgress = Math.max(0, timelineProgress - SCROLL_STEP);
+        } else {
+            timelineProgress = 0;
         }
-    }
 
-    // Handle Timeline Scrolling
-    function handleTimeline(direction) {
-        const step = 5; // Increased step size for faster scrolling
-        timelinePosition = direction === 'down' 
-            ? Math.min(100, timelinePosition + step)
-            : Math.max(0, timelinePosition - step);
+        // Find nearest mark for snapping
+        const nearestMark = MARKS.reduce((prev, curr) => {
+            return (Math.abs(curr - timelineProgress) < Math.abs(prev - timelineProgress) ? curr : prev);
+        });
+
+        // Snap to mark if close enough
+        if (Math.abs(timelineProgress - nearestMark) < SCROLL_STEP / 2) {
+            timelineProgress = nearestMark;
+        }
 
         // Update progress bar
         if (pages.timeline.progress) {
-            pages.timeline.progress.style.width = `${timelinePosition}%`;
+            pages.timeline.progress.style.width = `${timelineProgress}%`;
         }
 
-        // Calculate which section should be visible
-        const sectionIndex = Math.floor(timelinePosition / 25);
-        const offset = -(sectionIndex * 100);
-
-        // Center the current section
-        if (pages.timeline.content) {
-            pages.timeline.content.style.transform = `translateX(${offset}%)`;
-        }
-
-        // Update cards and points
-        pages.timeline.cards.forEach((card, index) => {
-            if (index <= sectionIndex) {
-                card.classList.add('active');
-                pages.timeline.points[index]?.classList.add('active');
+        // Update points and cards
+        pages.timeline.points.forEach((point, index) => {
+            const markPosition = MARKS[index];
+            const isAtMark = Math.abs(timelineProgress - markPosition) < 0.1;
+            
+            // Update point state
+            if (timelineProgress >= markPosition) {
+                point.classList.add('active');
             } else {
+                point.classList.remove('active');
+            }
+
+            // Update card state
+            const card = pages.timeline.cards[index];
+            if (card && isAtMark) {
+                card.classList.add('active');
+            } else if (card) {
                 card.classList.remove('active');
-                pages.timeline.points[index]?.classList.remove('active');
             }
         });
 
-        // Check if timeline is complete
-        if (timelinePosition >= 100) {
-            timelineComplete = true;
-        }
+        // Check completion
+        timelineComplete = timelineProgress >= 100;
+        return timelineComplete;
     }
 
     // Handle Page Transitions
@@ -85,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 2: // About to Work Experience
                     if (pages.page2) {
                         pages.page2.style.transform = 'translateY(-100%)';
-                        initTimeline(); // Initialize timeline when entering work experience page
                     }
                     break;
                 case 3: // Work Experience to Projects
@@ -116,9 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 4: // Back to Work Experience
                     if (pages.page3) {
                         pages.page3.style.transform = 'translateX(0)';
+                        // Reset timeline when going back
+                        timelineProgress = 0;
                         timelineComplete = false;
-                        timelinePosition = 0;
-                        handleTimeline('up');
+                        scrollCounter = 0;
+                        updateTimeline('reset');
                     }
                     break;
                 case 5: // Back to Projects
@@ -133,14 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Projects Page Parallax Effect
+    // Projects Page Parallax
     function handleParallax(e) {
         if (currentPage !== 4) return;
 
-        const mouseX = e.clientX / window.innerWidth - 0.5;
-        const mouseY = e.clientY / window.innerHeight - 0.5;
-
         requestAnimationFrame(() => {
+            const mouseX = e.clientX / window.innerWidth - 0.5;
+            const mouseY = e.clientY / window.innerHeight - 0.5;
+
             const items = document.querySelectorAll('.project-item');
             items.forEach(item => {
                 const speed = parseFloat(item.getAttribute('data-speed'));
@@ -154,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Main Scroll Handler
     function handleScroll(event) {
         const now = Date.now();
-        if (now - lastScrollTime < 800) return;
+        if (now - lastScrollTime < 300) return;
         lastScrollTime = now;
 
         if (isAnimating) return;
@@ -163,10 +171,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Handle Work Experience Timeline
         if (currentPage === 3 && !timelineComplete) {
-            handleTimeline(direction);
-            return;
+            event.preventDefault();
+            const isComplete = updateTimeline(direction);
+            if (!isComplete) return;
         }
 
+        // Handle Page Transitions
         if (direction === 'down' && currentPage < totalPages) {
             isAnimating = true;
             handleTransition('down');
@@ -182,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
     }
 
-    // Mobile Touch Support
+    // Touch Support
     let touchStartY = 0;
     
     function handleTouchStart(e) {
@@ -201,14 +211,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Initialize Rolling Text
-    function initRollingText() {
-        const container = document.querySelector('.rolling-text-content');
-        if (container) {
-            container.innerHTML = container.innerHTML + container.innerHTML;
-        }
-    }
-
     // Event Listeners
     window.addEventListener('wheel', handleScroll, { passive: true });
     document.addEventListener('mousemove', handleParallax);
@@ -216,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // Initialize
-    initRollingText();
     if (pages.contentWrapper) {
         pages.contentWrapper.style.display = 'block';
     }
