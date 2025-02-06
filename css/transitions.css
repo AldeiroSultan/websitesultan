@@ -6,7 +6,7 @@
     transform-style: preserve-3d;
 }
 
-/* Split Panel Transitions */
+/* Page Transitions */
 .split-active-left {
     transform: translateX(-100%) !important;
 }
@@ -15,7 +15,6 @@
     transform: translateX(100%) !important;
 }
 
-/* Page Transitions */
 .slide-up {
     transform: translateY(-100%) !important;
 }
@@ -32,64 +31,68 @@
     transform: translateY(0) !important;
 }
 
-/* Display States */
-.hidden {
-    display: none !important;
-}
-
 /* Timeline Transitions */
-.timeline-section {
-    transition: transform 0.3s ease;
-}
-
-.timeline-card {
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.timeline-card.active {
-    opacity: 1;
-    transform: translateY(-50%) !important;
+.timeline-progress {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .timeline-point {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.timeline-point.active::after {
-    transform: translate(-50%, -50%) scale(1) !important;
+.timeline-point::after {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Rolling Text Animation */
-@keyframes roll {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
+.timeline-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 0.5;
-    }
-    50% {
-        opacity: 1;
-    }
+/* Timeline Cards Transition Delays */
+.timeline-card[data-index="0"] { transition-delay: 0.1s; }
+.timeline-card[data-index="1"] { transition-delay: 0.15s; }
+.timeline-card[data-index="2"] { transition-delay: 0.2s; }
+.timeline-card[data-index="3"] { transition-delay: 0.25s; }
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
 }
 
-/* Page Transition Timing */
+/* Page Timing */
 .page {
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Page-specific Transition Delays */
+/* Page Transition Delays */
 #page2 { transition-delay: 50ms; }
 #page3 { transition-delay: 100ms; }
 #page4 { transition-delay: 150ms; }
 #page5 { transition-delay: 200ms; }
 
-/* Loading States */
+/* Timeline Point Active State */
+.timeline-point.active::after {
+    transform: translate(-50%, -50%) scale(1) !important;
+}
+
+/* Timeline Card Active State */
+.timeline-card.active {
+    opacity: 1;
+    transform: translate(-50%, 0) !important;
+}
+
+/* Rolling Text Animation */
+@keyframes roll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Loading State */
 .loading {
     opacity: 0.7;
     pointer-events: none;
@@ -103,49 +106,7 @@
     perspective: 1000px;
 }
 
-/* Fade Animations */
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-.fade-out {
-    animation: fadeOut 0.5s ease forwards;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    from { opacity: 1; }
-    to { opacity: 0; }
-}
-
-/* Timeline Progress Animation */
-.timeline-progress {
-    transition: width 0.3s ease;
-}
-
-/* Project Hover Animations */
-.project-content {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.project-title, .project-link {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Social Button Animations */
-.social-button {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.social-button svg {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Mobile Touch Optimization */
+/* Mobile Optimization */
 @media (hover: none) and (pointer: coarse) {
     .page {
         touch-action: none;
@@ -162,18 +123,28 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animation Reset for Window Resize */
+/* Animation Reset for Resize */
 .resize-animation-stopper * {
     animation: none !important;
     transition: none !important;
 }
 
-/* Timeline Scroll Animation */
+/* Active Point Animation */
+.timeline-point.active {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth Timeline Scrolling */
 .timeline-content {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Custom Timing Function */
-.custom-ease {
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+/* Timeline Progress Animation */
+.timeline-progress {
+    transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Timeline Snap Effect */
+.timeline-snap {
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
