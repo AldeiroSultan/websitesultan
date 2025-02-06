@@ -31,6 +31,16 @@
     transform: translateY(0) !important;
 }
 
+/* Display States */
+.hidden {
+    display: none !important;
+}
+
+/* Page Base Transitions */
+.page {
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Timeline Transitions */
 .timeline-progress {
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -48,51 +58,64 @@
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Timeline Cards Transition Delays */
-.timeline-card[data-index="0"] { transition-delay: 0.1s; }
-.timeline-card[data-index="1"] { transition-delay: 0.15s; }
-.timeline-card[data-index="2"] { transition-delay: 0.2s; }
-.timeline-card[data-index="3"] { transition-delay: 0.25s; }
-
-/* Utility Classes */
-.hidden {
-    display: none !important;
+/* Timeline Card Delays */
+.timeline-card[data-index="0"] {
+    transition-delay: 0.1s;
 }
 
-/* Page Timing */
-.page {
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+.timeline-card[data-index="1"] {
+    transition-delay: 0.15s;
 }
 
-/* Page Transition Delays */
-#page2 { transition-delay: 50ms; }
-#page3 { transition-delay: 100ms; }
-#page4 { transition-delay: 150ms; }
-#page5 { transition-delay: 200ms; }
-
-/* Timeline Point Active State */
-.timeline-point.active::after {
-    transform: translate(-50%, -50%) scale(1) !important;
+.timeline-card[data-index="2"] {
+    transition-delay: 0.2s;
 }
 
-/* Timeline Card Active State */
-.timeline-card.active {
-    opacity: 1;
-    transform: translate(-50%, 0) !important;
+.timeline-card[data-index="3"] {
+    transition-delay: 0.25s;
 }
 
 /* Rolling Text Animation */
 @keyframes roll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
 }
 
-/* Loading State */
+/* Page Specific Delays */
+#page2 {
+    transition-delay: 50ms;
+    z-index: 4;
+}
+
+#page3 {
+    transition-delay: 100ms;
+    z-index: 3;
+}
+
+#page4 {
+    transition-delay: 150ms;
+    z-index: 2;
+}
+
+#page5 {
+    transition-delay: 200ms;
+    z-index: 1;
+}
+
+/* Loading States */
 .loading {
     opacity: 0.7;
     pointer-events: none;
@@ -106,7 +129,32 @@
     perspective: 1000px;
 }
 
-/* Mobile Optimization */
+/* Timeline Progress Animation */
+.timeline-progress-animation {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Project Hover Effects */
+.project-content {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-title,
+.project-link {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Timeline Active States */
+.timeline-point.active::after {
+    transform: translate(-50%, -50%) scale(1) !important;
+}
+
+.timeline-card.active {
+    opacity: 1;
+    transform: translateY(0) !important;
+}
+
+/* Mobile Touch Optimization */
 @media (hover: none) and (pointer: coarse) {
     .page {
         touch-action: none;
@@ -117,7 +165,17 @@
     }
 }
 
-/* Animation Performance */
+/* Timeline Snap Animation */
+.timeline-snap {
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Active Point Animation */
+.timeline-point.active {
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Performance Optimizations */
 * {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -127,24 +185,4 @@
 .resize-animation-stopper * {
     animation: none !important;
     transition: none !important;
-}
-
-/* Active Point Animation */
-.timeline-point.active {
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
-}
-
-/* Smooth Timeline Scrolling */
-.timeline-content {
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Timeline Progress Animation */
-.timeline-progress {
-    transition: width 0.3s cubic-bezier(0.23, 1, 0.32, 1);
-}
-
-/* Timeline Snap Effect */
-.timeline-snap {
-    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
 }
