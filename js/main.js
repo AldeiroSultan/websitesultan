@@ -4,11 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalPages = 5;
     let isAnimating = false;
     let lastScrollTime = 0;
+    let scrollDirection = null;
+    let lastScrollDirection = null;
 
     // Timeline State
     let timelineProgress = 0;
     let timelineComplete = false;
-    const SCROLL_STEP = 33.33; // Simplified to 3 steps total
+    const SCROLL_STEP = 33.33;
 
     // Initialize Elements
     const pages = {
@@ -72,7 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         pages.page3.style.transform = 'translateX(-100%)';
                         pages.page4.style.transform = 'translateX(0)';
                     } else {
-                        return false; // Prevent transition if timeline not complete
+                        return false;
                     }
                     break;
                 case 4: // Projects to Contact
@@ -105,44 +107,59 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    // Main Scroll Handler
+    // Improved Scroll Handler with Better Direction Detection
     function handleScroll(event) {
         const now = Date.now();
         if (now - lastScrollTime < 800) return;
-        lastScrollTime = now;
-
-        if (isAnimating) return;
         
-        const direction = event.deltaY > 0 ? 'down' : 'up';
+        const newDirection = event.deltaY > 0 ? 'down' : 'up';
         
-        // Handle Work Experience Timeline
-        if (currentPage === 3 && !timelineComplete && direction === 'down') {
-            updateTimeline(direction);
+        // Prevent direction change during animation
+        if (isAnimating && lastScrollDirection && newDirection !== lastScrollDirection) {
             return;
         }
 
+        lastScrollTime = now;
+        lastScrollDirection = newDirection;
+        
+        if (isAnimating) return;
+        
+        // Handle Work Experience Timeline
+        if (currentPage === 3 && !timelineComplete && newDirection === 'down') {
+            const isComplete = updateTimeline(newDirection);
+            if (!isComplete) return;
+        }
+
         // Handle Page Transitions
-        if (direction === 'down' && currentPage < totalPages) {
+        if (newDirection === 'down' && currentPage < totalPages) {
             if (handleTransition('down')) {
                 isAnimating = true;
                 currentPage++;
+                
+                setTimeout(() => {
+                    isAnimating = false;
+                    lastScrollDirection = null;
+                }, 800);
             }
-        } else if (direction === 'up' && currentPage > 1) {
+        } else if (newDirection === 'up' && currentPage > 1) {
             isAnimating = true;
             handleTransition('up');
             currentPage--;
+            
+            setTimeout(() => {
+                isAnimating = false;
+                lastScrollDirection = null;
+            }, 800);
         }
-
-        setTimeout(() => {
-            isAnimating = false;
-        }, 800);
     }
 
-    // Touch Support
+    // Improved Touch Support
     let touchStartY = 0;
+    let touchStartTime = 0;
     
     function handleTouchStart(e) {
         touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
     }
 
     function handleTouchMove(e) {
@@ -150,10 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const touchEndY = e.touches[0].clientY;
         const deltaY = touchStartY - touchEndY;
+        const touchDuration = Date.now() - touchStartTime;
         
-        if (Math.abs(deltaY) > 50) {
+        // Only trigger if touch is fast enough and distance is significant
+        if (Math.abs(deltaY) > 50 && touchDuration < 300) {
             handleScroll({ deltaY: deltaY });
             touchStartY = touchEndY;
+            touchStartTime = Date.now();
         }
     }
 
@@ -173,9 +193,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Event Listeners
-        window.addEventListener('wheel', handleScroll);
-        document.addEventListener('touchstart', handleTouchStart);
-        document.addEventListener('touchmove', handleTouchMove);
+        window.addEventListener('wheel', handleScroll, { passive: true });
+        document.addEventListener('touchstart', handleTouchStart, { passive: true });
+        document.addEventListener('touchmove', handleTouchMove, { passive: true });
     }
 
     // Start the application
