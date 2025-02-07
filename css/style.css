@@ -32,6 +32,7 @@ body {
     justify-content: center;
     align-items: center;
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
 /* Split Panels */
@@ -51,6 +52,7 @@ body {
     height: 100%;
     overflow: hidden;
     transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
 }
 
 .panel-left img, .panel-right img {
@@ -115,7 +117,12 @@ body {
     max-width: 500px;
 }
 
-/* Timeline Styles */
+/* Timeline Page */
+#page3 {
+    background-color: #0f172a;
+    z-index: 3;
+}
+
 .timeline-container {
     position: relative;
     width: 100%;
@@ -159,6 +166,7 @@ body {
     );
     border-radius: 2px;
     transition: width 0.3s ease;
+    will-change: width;
 }
 
 .timeline-marks {
@@ -228,13 +236,12 @@ body {
     transform: translateY(20px);
     transition: all 0.3s ease;
     top: 0;
-    left: 0;
 }
 
 .timeline-card[data-index="0"] { left: 0%; }
-.timeline-card[data-index="1"] { left: 33.33%; }
-.timeline-card[data-index="2"] { left: 66.66%; }
-.timeline-card[data-index="3"] { left: 100%; }
+.timeline-card[data-index="1"] { left: 33.33%; transform: translateX(-50%); }
+.timeline-card[data-index="2"] { left: 66.66%; transform: translateX(-50%); }
+.timeline-card[data-index="3"] { left: 100%; transform: translateX(-100%); }
 
 .timeline-card.active {
     opacity: 1;
@@ -287,6 +294,7 @@ body {
     background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
     z-index: 2;
     overflow: hidden;
+    transform: translateX(100%);
 }
 
 .projects-container {
@@ -494,4 +502,49 @@ body {
 .social-button:hover svg {
     transform: scale(1.2);
     color: white;
+}
+
+/* Performance Classes */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.smooth-transition {
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+}
+
+/* Loading State */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Mobile Optimization */
+@media (hover: none) and (pointer: coarse) {
+    .page {
+        touch-action: none;
+    }
+    
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+/* Animation Reset for Resize */
+.resize-animation-stopper * {
+    animation: none !important;
+    transition: none !important;
+}
+
+/* Hardware Acceleration */
+.gpu-accelerated {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
 }
